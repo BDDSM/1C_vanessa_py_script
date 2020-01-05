@@ -92,7 +92,7 @@ def va_params(param_dict, test_name):
 	"ТегTreeВключенПоУмолчанию": true
 }
     '''
-    print(params)
+    #print(params)
     return params
 
 
@@ -132,7 +132,7 @@ def update_test(params, usr='adm'):
 \tИ я нажимаю на кнопку \'Продолжить\'
 \tИ я жду открытия окна "Что нового в конфигурации Розница, редакция 2.3" в течение 600 секунд
 '''
-    print(test)
+    #print(test)
     return test
 
 
@@ -165,7 +165,7 @@ def head_tail_test(what, params, name):
 \t\t| \'test\' | \'\' | \'\' | \'File="''' + params['WORK_PATH_BASE_CURR'] + '''";\' | \'''' + params['MODEL_USER'] + '''\' | \'\' | \'\' | \'\'|\n
 '''
     elif what == 'tail':
-        list_str = '''\tИ я закрываю сеанс TESTCLIENT'''
+        list_str = ''''''
 
     return list_str
 
@@ -182,8 +182,7 @@ def parse_name(params, name):
     usr_list = split(r'[%.]', name)
     user = usr_list[1]
     if len(user) == 0:
-        print('не корректное имя теста')
-        exit()
+        print('ERROR test name')
     params['MODEL_USER'] = user
     print('USER : ' + user)
 

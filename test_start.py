@@ -9,6 +9,7 @@ from shutil import copyfile
 from dt import start_vanessa
 from prepare import open_file_r
 from test_pars import print_cat, write_curr_test
+from proc import proc
 
 
 
@@ -83,7 +84,6 @@ def start_debug_tests(params):
         tests_lst = listdir(TESTS_WITH_ERROR)
     else:
         print('PATH : ' + TESTS_WITH_ERROR + 'NOT EXISTS')
-        exit()
 
     count = 0
     for i in tests_lst:
@@ -110,7 +110,7 @@ def start_debug_tests(params):
         num = input('номер теста или 0 для выхода : ')
         if num == '0':
             flag = False
-            exit()
+            break
         for k, v in dict_menu_tests.items():
             if k == num:
                 test_name = v

@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*
-#15nov19kg
+#23dec19kg
 #python 3.7.1
 
 from proc import proc
@@ -20,8 +20,8 @@ def del_path(cur_path):
     удаляет директорию
     '''
     if path.exists(cur_path):
-        rmtree(cur_path)
         print('DEL ' + cur_path)
+        rmtree(cur_path)
         print('----------------------------------------------- \n')
     else:
         print('NOT DEL ' + cur_path)
@@ -52,6 +52,20 @@ def create_log_dir(param_dict):
 
 
 
+def just_do_it(command, about='', p_1c='', sock=None):
+    '''
+    command - консольная команда
+    about - строка описыват что делаем
+    p_1c=''
+    *
+    запускает консольную команду в процессе
+    '''
+    print('\n' + about + ' :\n' + command)
+    proc(command, p_1c, sock=sock)
+    print('----------------------------------------------- \n')
+
+
+
 def prepare_st(param_dict):
     '''
     param_dict - словарь параметров
@@ -63,38 +77,51 @@ def prepare_st(param_dict):
     копирует тесты, конфигурацию и эталоны на компьютер где будет прохолить тест
     создает директорию для логфайлов
     '''
-    proc('chcp 65001')
-    proc('net use')
-    proc('net use /delete * /y')
+    just_do_it('net use', 'NET')
+    
+    just_do_it('net use /delete * /y', 'NET')
 
-    proc('net use '+param_dict['BUILD_FILES_Trunk']+' /PERSISTENT:NO /User:'+param_dict['NET_DOMAIN']+'\\'+param_dict['NET_USER']+' '+param_dict['NET_PASSWORD'])
-    proc('net use '+param_dict['REPO_PATH']+' /PERSISTENT:NO /User:'+param_dict['NET_DOMAIN']+'\\'+param_dict['NET_USER']+' '+param_dict['NET_PASSWORD'])
-    proc('net use')
-    print('----------------------------------------------- \n')
+    just_do_it('net use '+param_dict['BUILD_FILES_Trunk']+' /PERSISTENT:NO /User:'+\
+         param_dict['NET_DOMAIN']+'\\'+param_dict['NET_USER']+' '+param_dict['NET_PASSWORD'], 'NET CON')
 
-    print('XCOPY ' + param_dict['PLATFORM_PATH']+' ---> '+param_dict['PLATFORM_PATH_ON_RUNNER'] + '\n')
-    proc('XCOPY \"'+param_dict['PLATFORM_PATH']+'\" \"'+param_dict['PLATFORM_PATH_ON_RUNNER']+'\"  /H /Y /C /R /S')
-    print('----------------------------------------------- \n')
+    just_do_it('net use '+param_dict['REPO_PATH']+' /PERSISTENT:NO /User:'+\
+         param_dict['NET_DOMAIN']+'\\'+param_dict['NET_USER']+' '+param_dict['NET_PASSWORD'], 'NET CON')
+    
+    just_do_it('net use', 'NET')
+    
+    sock = param_dict['CLIENT']
 
-    print('XCOPY ' + param_dict['VANESSA_PATH']+' ---> '+param_dict['VANESSA_ON_RUNNER'] + '\n')
-    proc('XCOPY \"'+param_dict['VANESSA_PATH']+'\" \"'+param_dict['VANESSA_ON_RUNNER']+'\"  /H /Y /C /R /S')
-    print('----------------------------------------------- \n')
+    just_do_it('XCOPY \"'+param_dict['PLATFORM_PATH']+'\" \"'+param_dict['PLATFORM_PATH_ON_RUNNER']+\
+               '\"  /H /Y /C /R /S', 'COPY PLATFORM', 'xcopy.exe', sock)
 
-    print('XCOPY ' + param_dict['VANESSA_TOOLS']+' ---> '+param_dict['VANESSA_TOOLS_ON_RUNNER'] + '\n')
-    proc('XCOPY \"'+param_dict['VANESSA_TOOLS']+'\" \"'+param_dict['VANESSA_TOOLS_ON_RUNNER']+'\"  /H /Y /C /R /S')
-    print('----------------------------------------------- \n')
+    just_do_it('XCOPY \"'+param_dict['VANESSA_PATH']+'\" \"'+param_dict['VANESSA_ON_RUNNER']+\
+               '\"  /H /Y /C /R /S', 'COPY VANESSA', 'xcopy.exe', sock)
 
-    print('XCOPY ' + param_dict['TESTS_PATH']+' ---> '+param_dict['TESTS_ON_RUNNER'] + '\n')
-    proc('XCOPY \"'+param_dict['TESTS_PATH']+'\" \"'+param_dict['TESTS_ON_RUNNER']+'\"  /H /Y /C /R /S')
-    print('----------------------------------------------- \n')
+    just_do_it('XCOPY \"'+param_dict['VANESSA_TOOLS']+'\" \"'+param_dict['VANESSA_TOOLS_ON_RUNNER']+\
+               '\"  /H /Y /C /R /S', 'COPY VANESSA TOOLS', 'xcopy.exe', sock)
 
-    print('XCOPY \"'+param_dict['MODEL_PATH']+'\" \"'+param_dict['MODEL_ON_RUNNER']+'\"  /H /Y /C /R /S\n')
-    proc('XCOPY \"'+param_dict['MODEL_PATH']+'\" \"'+param_dict['MODEL_ON_RUNNER']+'\"  /H /Y /C /R /S')
-    print('----------------------------------------------- \n')
+    just_do_it('XCOPY \"'+param_dict['MODEL_PATH']+'\" \"'+param_dict['MODEL_ON_RUNNER']+\
+               '\"  /H /Y /C /R /S', 'COPY ALL DT', 'xcopy.exe', sock)
 
-    print('XCOPY \"'+param_dict['CF_PATH']+'\" \"'+param_dict['WORK_PATH']+'\"  /H /Y /C /R /S\n')
-    proc('XCOPY \"'+param_dict['CF_PATH']+'\" \"'+param_dict['WORK_PATH']+'\"  /H /Y /C /R /S')
-    print('----------------------------------------------- \n')
+    if param_dict['GIT_FLAG']:
+        if path.exists(param_dict['CURR_DIR']+'tests_git'):
+            just_do_it('cd "' + param_dict['CURR_DIR']+'tests_git" & git pull origin > cmd', 'GIT PULL')
+        else:
+            just_do_it('cd ' + param_dict['CURR_DIR'] + ' & ' + 'git clone "' +\
+                       param_dict['GIT_REPO_TESTS'] + '" "tests_git" > cmd', 'GIT CLONE')
+
+        just_do_it('XCOPY \"'+param_dict['CURR_DIR']+'tests_git\" \"'+param_dict['TESTS_ON_RUNNER']+\
+                   '\"  /H /Y /C /R /S', 'COPY FROM TEST REPO', 'xcopy.exe', sock)
+    else:
+        just_do_it('XCOPY \"'+param_dict['TESTS_PATH']+'\" \"'+param_dict['TESTS_ON_RUNNER']+\
+                   '\"  /H /Y /C /R /S', 'COPY TESTS', 'xcopy.exe', sock)
+
+    if param_dict['PREPARE_MODE'] == 'cpcf':
+        just_do_it('XCOPY \"'+param_dict['CF_PATH']+'\" \"'+param_dict['WORK_PATH']+\
+                   '\"  /H /Y /C /R /S', 'COPY CF', 'xcopy.exe', sock)
+    else:
+        if not path.exists(param_dict['WORK_PATH']):
+            mkdir(param_dict['WORK_PATH'])
 
     create_log_dir(param_dict)
 
@@ -166,5 +193,24 @@ def get_list_tests(params):
         if i.find('@_') != -1:
             tests_list.append(i)
     if len(tests_list) == 0:
-        print('\nТЕСТЫ НЕ БЫЛИ СОЗДАНЫ')
+        print('\nTEST CREATE ERROR')
     return tests_list
+
+
+
+def get_cd_directory(name, dir_path):
+    '''
+    name - строка содержащаяся в названии директории
+    dir_path - директория в которой ищем
+    *
+    ищет название поддиректорию по заданной строке
+    *
+    возвращает путь до найденной папки либо пустую строку
+    '''
+    result = ''
+    dir_list = listdir(dir_path)
+    for i in dir_list:
+        if i.find(name) != -1:
+            result = dir_path + "\\" + i
+            print(result)
+    return result

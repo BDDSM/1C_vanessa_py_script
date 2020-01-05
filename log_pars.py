@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*
-#27nov19kg
+#23dec19kg
 #python 3.7.1
 
 from os import listdir, path, mkdir, remove
@@ -44,8 +44,10 @@ def parse_log_path(params):
                 curr_final_list.append('----------------------------------------------- \n')
                 curr_final_list.append('\t' + i + ' : \n')
                 curr_final_list.append('                       *** \n')
-                for z in list_for_current_log[-14:]:
-                    curr_final_list.append(z)
+                for z in list_for_current_log:
+                    if z.find("ОписаниеОшибки") != -1:
+                        curr_final_list.append(z)
+                        break
                 curr_final_list.append('----------------------------------------------- \n')
 
                 list_for_final_data.append(curr_final_list.copy())
@@ -67,6 +69,8 @@ def create_final(params, add_h='', add_t=''):
     парсит лог файлы выбирает информацию о тестах и ошибках
     помещает в каталог FINAL_LOG сводную информацию об ошибках 
     и тесты в коротрых были ошибки
+    *
+    возвращает лист с ошибками
     '''
     final_list = parse_log_path(params)
     error_logs = final_list[0]
@@ -116,6 +120,7 @@ def create_final(params, add_h='', add_t=''):
                         break
                 remove(TESTS_PATH + x)
 
-        print('БЫЛИ ОШИБКИ\n')
+        print('ERROR\n')
         print('FINAL_LOG : ' + FINAL_LOG)
         print('----------------------------------------------- \n')
+    return final_list

@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*
-#28nov19kg
+#23dec19kg
 #python 3.7.1
 
 from os import path, getpid
 
 
-'''
+r'''
 param.py - все настройки программы (сценарии+параметры)
 *
 Внутри функции ret_param_dict() правильно должны быть заполнены следующие переменные:
@@ -13,7 +13,7 @@ param.py - все настройки программы (сценарии+пар
 build_files - каталог на компьютере(в нашем примере "sr") из которого копируются все данные на машину где будет проходить тест.
   в каталоге должны быть тесты, файл cf конфигурации, файлы dt баз мэнеджера и клиента тестирования, каталоги с Ванессой.
   что бы не править все настройки все вышеперчисленные файлы должны быть расположеный в подкаталогах следующим образом:
-  1. пример пути до каталога: '\\\\Kuznetsov-GI.dept07\\Users\\Kuznetsov_g\\BuildAddFiles\\Retail\\sr'
+  1. пример пути до каталога: '\\Kuznetsov-GI.dept07\Users\Kuznetsov_g\BuildAddFiles\Retail\sr'
   2. карта подкаталогов и их наполнения:
     +-- sr
     |
@@ -57,7 +57,8 @@ NET_DOMAIN, NET_USER, NET_PASSWORD - данные о компьютере с к�
 Функции return_scenario() возвращает список словарей.
 каждый словарь в списке это настройки для прогона одного набора тестов.
 Возможное содержание такого словаря:
-  PREPARE_MODE - (True/False) копировать или нет данные с компьютера где находится папка с файлами для тестов.
+  PREPARE_MODE - ('cpcf'/'uprep'/''/'ret') 1. копирует cf / 2. обновляет базу из хранилища / 3. ничего не делает (расчитывает, что все уже
+  скопированно на раннер)/ 4. продолжить тест со скаченными ранее данными.
   DT - ('role.dt') имя базы-эталона для данного тестирования
   ADM_USER - ('Администратор') пароль администратора от базы
   USER - ('take_from_testname'/'Кассир') пароль, задается один для всего набора тестов или берется из имени каждого теста(имя задается в специальных комментариях в файле общего теста) 
@@ -75,9 +76,9 @@ def ret_param_dict():
     current_directory = path.split(current_directory)[0]
     print('каталог со скриптом: ' + current_directory)
     print('----------------------------------------------- \n')
-    
+
     pid_curr_proc = str(getpid())
-    print('PID: ' + pid_curr_proc)
+    print('MAIN PID : ' + pid_curr_proc + '\n')
 
     platform_number = '8.3.15.1656'
     platform = 'C:\\Program Files (x86)\\1cv8\\' + platform_number
@@ -94,7 +95,9 @@ def ret_param_dict():
                       START_PL_1C = '\"' + platform + '\\bin\\1cv8.exe\"',
                       PID = pid_curr_proc,
 
-                      START_1cestart = '\"C:\\Program Files (x86)\\1cv82\\common\\1cestart.exe\"',
+                      START_1cestart = '\"C:\\Program Files (x86)\\1cv8\\common\\1cestart.exe\"',
+
+                      CURR_DIR = current_directory + '\\',
 
                       BUILD_PATH = '\\\\builder-fat.dept07\\1c',
                       VANESSA_PATH = build_files+'\\vanessa\\vanessa-automation',
@@ -121,10 +124,13 @@ def ret_param_dict():
                       NET_USER = 'Kuznetsov_G',
                       NET_PASSWORD = 'jlbyldfnhb',
 
-                      REPO_PATH = 'tcp:\\\\anteros.dept07:4542\\Storage2_3_1',
-                      REPO_VER = '657',
+                      REPO_PATH = r'tcp://anteros.dept07:4542/Storage2_3_2',
+                      REPO_VER = '',
                       REPO_USER = 'КузнецовГ',
                       REPO_PASSWORD = '',
+
+                      GIT_FLAG = True,
+                      GIT_REPO_TESTS = r'https://akeso.dept07/Kuznetsov_G/tests.git',
 
                       ESC_VANESSA = 'Истина',
                       ESC_TEST_CLIENT = 'Истина',
@@ -132,29 +138,30 @@ def ret_param_dict():
                       STORAGE_CURR_1CD = '',
                       
                       START_TIME = '',
-                      END_TIME = ''
+                      END_TIME = '',
+                      PREPARE_MODE = '',
+                      CLIENT = None
                           )
 
     return param_dict
 
 
-
 def return_scenario():
     return [
-        dict(PREPARE_MODE = True,
-             DT = 'role.dt',
-             ADM_USER = 'Администратор',
-             USER = 'take_from_testname',
-             TEST_FILE = 'role_test.txt',
-             ADD_HEAD = 'only_start',
-             ADD_TAIL = ''
-        ),
-        dict(PREPARE_MODE = False,
-             DT = 'rmk.dt',
-             ADM_USER = 'Администратор',
-             USER = 'Администратор',
-             TEST_FILE = 'rmk_test.txt',
-             ADD_HEAD = 'addit_strings_head_rmk',
-             ADD_TAIL = ''
-        )
+       #dict(PREPARE_MODE = 'uprep',
+            #DT = 'role.dt',
+            #ADM_USER = 'Администратор',
+            #USER = 'take_from_testname',
+            #TEST_FILE = 'role.txt',
+            #ADD_HEAD = 'only_start',
+            #ADD_TAIL = ''
+       #),
+       dict(PREPARE_MODE = 'cpcf',
+            DT = 'rmk.dt',
+            ADM_USER = 'Администратор',
+            USER = 'Администратор',
+            TEST_FILE = 'rmk.txt',
+            ADD_HEAD = 'addit_strings_head_rmk_er_290',
+            ADD_TAIL = ''
+       )
     ]
