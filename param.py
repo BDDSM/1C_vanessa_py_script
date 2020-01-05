@@ -13,7 +13,7 @@ param.py - все настройки программы (сценарии+пар
 build_files - каталог на компьютере(в нашем примере "sr") из которого копируются все данные на машину где будет проходить тест.
   в каталоге должны быть тесты, файл cf конфигурации, файлы dt баз мэнеджера и клиента тестирования, каталоги с Ванессой.
   что бы не править все настройки все вышеперчисленные файлы должны быть расположеный в подкаталогах следующим образом:
-  1. пример пути до каталога: '\\Kuznetsov-GI.dept07\Users\Kuznetsov_g\BuildAddFiles\Retail\sr'
+  1. пример пути до каталога: '\\my_computer\Users\my_user\BuildAddFiles\Retail\sr'
   2. карта подкаталогов и их наполнения:
     +-- sr
     |
@@ -82,13 +82,13 @@ def ret_param_dict():
 
     platform_number = '8.3.15.1656'
     platform = 'C:\\Program Files (x86)\\1cv8\\' + platform_number
-    build_files = '\\\\Kuznetsov-GI.dept07\\Users\\Kuznetsov_g\\BuildAddFiles\\Retail\\sr'
+    build_files = '\\\\my_computer\\Users\\my_user\\BuildAddFiles\\Retail\\sr'
 
     storage = current_directory + '\\TEST_CATALOG'
     work = storage + '\\work\\'
     final_log = current_directory + '\\FINAL_LOG\\'
 
-    param_dict = dict(REPO_TRUNK = '8.3.15.1656;;КузнецовГ;',
+    param_dict = dict(REPO_TRUNK = '8.3.15.1656;;user;',
                       BUILD_FILES_Trunk = build_files,
                       PLATFORM_PATH = build_files + '\\platforms\\' + platform_number,
                       PLATFORM_PATH_ON_RUNNER = platform + '\\',
@@ -99,7 +99,7 @@ def ret_param_dict():
 
                       CURR_DIR = current_directory + '\\',
 
-                      BUILD_PATH = '\\\\builder-fat.dept07\\1c',
+                      BUILD_PATH = '\\\\computer_name\\1c',
                       VANESSA_PATH = build_files+'\\vanessa\\vanessa-automation',
                       VANESSA_TOOLS = build_files+'\\vanessa\\vanessa-tools',
                       TEST_CATALOG = storage,
@@ -120,17 +120,17 @@ def ret_param_dict():
                       MODEL_ADMIN_USER = '',
                       MODEL_USER = '',
 
-                      NET_DOMAIN = 'dept07',
-                      NET_USER = 'Kuznetsov_G',
-                      NET_PASSWORD = 'jlbyldfnhb',
+                      NET_DOMAIN = 'domain',
+                      NET_USER = 'user',
+                      NET_PASSWORD = 'pass',
 
-                      REPO_PATH = r'tcp://anteros.dept07:4542/Storage2_3_2',
+                      REPO_PATH = r'tcp://repo_addr',
                       REPO_VER = '',
-                      REPO_USER = 'КузнецовГ',
+                      REPO_USER = 'repo_user',
                       REPO_PASSWORD = '',
 
                       GIT_FLAG = True,
-                      GIT_REPO_TESTS = r'https://akeso.dept07/Kuznetsov_G/tests.git',
+                      GIT_REPO_TESTS = r'https://repo_tests',
 
                       ESC_VANESSA = 'Истина',
                       ESC_TEST_CLIENT = 'Истина',
